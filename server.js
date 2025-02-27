@@ -11,12 +11,10 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server);
 
-db.sequelize
-  .authenticate()
-  .then(() => {
-    console.log("db is connected!");
-  })
-  .catch((err) => {
-    console.log("db is messed up! Here's the error: ", err);
-    console.log(`🚀 Server ready at ${url}`);
-  });
+try {
+  await db.sequelize.authenticate();
+  console.log("db is connected!");
+  console.log(`🚀 Server ready at ${url}`);
+} catch (err) {
+  console.log("db is messed up! Here's the error: ", err);
+}
