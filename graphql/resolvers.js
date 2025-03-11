@@ -1,18 +1,15 @@
+import db from "../models/index.js";
+
 const resolvers = {
   Query: {
-    getUsers: () => {
-      const users = [
-        {
-          username: "John",
-          email: "john@email.com",
-        },
-        {
-          username: "Steve",
-          email: "Steve@email.com",
-        },
-      ];
+    getUsers: async () => {
+      try {
+        const users = await db.User.findAll();
 
-      return users;
+        return users;
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
 };
