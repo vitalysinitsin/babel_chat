@@ -28,6 +28,12 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
         unique: true,
+        validate: {
+          isEmail: {
+            args: true,
+            msg: "Must be a valid email format.",
+          },
+        },
       },
       password: {
         type: DataTypes.STRING,
