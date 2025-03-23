@@ -7,9 +7,14 @@ import typeDefs from "./graphql/typeDefs.js";
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: (ctx) => ctx,
 });
 
-const { url } = await startStandaloneServer(server);
+const { url } = await startStandaloneServer(server, {
+  context: async ({ req }) => ({
+    token: req.headers.authorization || "",
+  }),
+});
 
 try {
   await db.sequelize.authenticate();

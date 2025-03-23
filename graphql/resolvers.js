@@ -6,9 +6,24 @@ import env from "../config/env.json" with { type: "json" };
 
 const resolvers = {
   Query: {
-    getUsers: async () => {
+    getUsers: async (_, __, context) => {
+      if (context?.token) {
+        const token = context.token.split("Bearer ")[1];
+
+        jwt.verify(token, env.JWT_SECRET, (err, decodedToken) => {
+          if (err) {
+            throw new GraphQLError("Invalid token.", {
+              extensions: { code: 401 },
+            });
+          }
+        })
+
+        
+      }
+
       try {
         const users = await db.User.findAll();
+        console.log(user);
 
         return users;
       } catch (err) {
@@ -50,9 +65,7 @@ const resolvers = {
           expiresIn: "1hr",
         });
 
-        user.token = token;
-
-        return user;
+        return {...user.toJSON(), createdAt: user.createdAt.toISOString(), token};
       } catch (errors) {
         throw new GraphQLError("Authorization failed.", {
           extensions: { code: 401, errors },
