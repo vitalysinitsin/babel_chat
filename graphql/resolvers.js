@@ -2,32 +2,31 @@ import db from "../models/index.js";
 import bcrypt from "bcryptjs";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
-import env from "../config/env.json" with { type: "json" };
+import env from "../config/env.json" with {type: "json"};
 
 const resolvers = {
   Query: {
     getUsers: async (_, __, context) => {
-      if (context?.token) {
-        const token = context.token.split("Bearer ")[1];
-
-        jwt.verify(token, env.JWT_SECRET, (err, decodedToken) => {
-          if (err) {
-            throw new GraphQLError("Invalid token.", {
-              extensions: { code: 401 },
-            });
-          }
-        })
-
-        
-      }
-
       try {
+        if (context?.token && context?.token !== "") {
+          const token = context.token.split("Bearer ")[1];
+
+          jwt.verify(token, env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+              throw new GraphQLError("Invalid token.");
+            }
+          });
+        } else {
+          throw new GraphQLError("Invalid token.");
+        }
+
         const users = await db.User.findAll();
-        console.log(user);
 
         return users;
-      } catch (err) {
-        throw new GraphQLError("Failed to fetch users.");
+      } catch (errors) {
+        throw new GraphQLError("Failed to fetch users.", {
+          extensions: { code: 401, errors },
+        });
       }
     },
     login: async (_, args) => {
@@ -65,7 +64,11 @@ const resolvers = {
           expiresIn: "1hr",
         });
 
-        return {...user.toJSON(), createdAt: user.createdAt.toISOString(), token};
+        return {
+          ...user.toJSON(),
+          createdAt: user.createdAt.toISOString(),
+          token,
+        };
       } catch (errors) {
         throw new GraphQLError("Authorization failed.", {
           extensions: { code: 401, errors },
