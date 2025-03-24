@@ -3,24 +3,30 @@ import bcrypt from "bcryptjs";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import env from "../config/env.json" with {type: "json"};
+import { Op } from "sequelize";
+
 
 const resolvers = {
   Query: {
     getUsers: async (_, __, context) => {
       try {
+        let user;
         if (context?.token && context?.token !== "") {
           const token = context.token.split("Bearer ")[1];
-
+          
           jwt.verify(token, env.JWT_SECRET, (err, decodedToken) => {
             if (err) {
               throw new GraphQLError("Invalid token.");
             }
+            user = decodedToken;
           });
         } else {
           throw new GraphQLError("Invalid token.");
         }
 
-        const users = await db.User.findAll();
+        const users = await db.User.findAll({
+          where: { username: { [Op.ne]: user.username } },
+        });
 
         return users;
       } catch (errors) {
