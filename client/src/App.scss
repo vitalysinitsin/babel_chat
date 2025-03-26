@@ -1,0 +1,13 @@
+$border-radius: 0;
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(
+    203deg,
+    rgba(131, 50, 180, 0.9) 0%,
+    rgba(250, 30, 30, 0.9) 50%,
+    rgba(250, 170, 70, 0.9) 100%
+  );
+}
