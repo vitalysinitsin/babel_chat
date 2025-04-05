@@ -1,5 +1,26 @@
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { FormEvent, useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+
+const REGISTER_USER = gql`
+  mutation register(
+    $username: String!
+    $email: String!
+    $password: String!
+    $confirmPassword: String!
+  ) {
+    register(
+      username: $username
+      email: $email
+      password: $password
+      confirmPassword: $confirmPassword
+    ) {
+      username
+      email
+      createdAt
+    }
+  }
+`;
 
 interface RegistrationVariables {
   email: string;
@@ -15,11 +36,19 @@ function Registration() {
     password: "",
     confirmPassword: "",
   });
+  const [registerUser, { loading }] = useMutation(REGISTER_USER, {
+    update(_, result) {
+      console.log(result);
+    },
+    onError(err) {
+      console.error(err);
+    },
+  });
 
   const sumbitRegistrationForm = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(variables);
+    registerUser({ variables });
   };
 
   return (
