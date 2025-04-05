@@ -94,7 +94,7 @@ const resolvers = {
         if (username?.trim() === "") errors.username = "Username is empty.";
         if (password?.trim() === "") errors.password = "Password is empty.";
         if (confirmPassword?.trim() === "")
-          errors.confirmPassword = "Password is empty.";
+          errors.confirmPassword = "Confrim Password is empty.";
         if (password !== confirmPassword)
           errors.confirmPassword = "Passwords do not match.";
 

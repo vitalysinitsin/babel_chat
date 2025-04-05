@@ -1,6 +1,7 @@
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { FormEvent, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
+import { Link, redirect, useNavigate } from "react-router-dom";
 
 const REGISTER_USER = gql`
   mutation register(
@@ -41,13 +42,12 @@ function Registration() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<GraphQlErrors>({});
+  const navigate = useNavigate();
   const [registerUser, { loading }] = useMutation(REGISTER_USER, {
-    update(_, result) {
-      console.log(result);
-      setErrors({});
-    },
-    onError(err) {
-      console.error(err.graphQLErrors[0].extensions?.errors);
+    update: (_, __) => navigate("/login", { replace: true }),
+    onError: (err) => {
+      console.log(err);
+
       setErrors(err.graphQLErrors[0].extensions?.errors as GraphQlErrors);
     },
   });
@@ -127,10 +127,18 @@ function Registration() {
               }
             />
           </Form.Group>
-          <div className="text-center">
-            <Button variant="success" type="submit" disabled={loading}>
+          <div className="d-flex flex-column gap-2 align-items-center text-center">
+            <Button
+              className="w-25"
+              variant="success"
+              type="submit"
+              disabled={loading}
+            >
               {loading ? "Loading..." : "Register"}
             </Button>
+            <small>
+              Already have an account? <Link to="/login">Login</Link>
+            </small>
           </div>
         </Form>
       </Col>
