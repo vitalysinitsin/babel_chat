@@ -86,7 +86,7 @@ const resolvers = {
   Mutation: {
     register: async (_, args) => {
       const { username, email, password, confirmPassword } = args;
-      const errors = [];
+      const errors = {};
 
       try {
         // validate inputs
@@ -112,9 +112,9 @@ const resolvers = {
 
         // return user back to client
         return user;
-      } catch ({ errors }) {
+      } catch (errors) {
         throw new GraphQLError("Bad input.", {
-          extensions: { errors, code: 406 },
+          extensions: { code: 406, errors },
         });
       }
     },
